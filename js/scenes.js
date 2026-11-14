@@ -243,7 +243,7 @@ export function toneScene(canvas, { tones = [1, 2, 3, 4], spin = true } = {}) {
   if (!renderer) return { play() {}, set() {} };
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(38, 2, .1, 100);
-  camera.position.set(0, 2.2, 9); camera.lookAt(0, 2.2, 0);
+  camera.position.set(0, 2, 9.5); camera.lookAt(0, 1.9, 0);
   scene.add(new THREE.AmbientLight(0xffffff, 1.4));
   const dl = new THREE.DirectionalLight(0xffffff, 1.6); dl.position.set(3, 6, 6); scene.add(dl);
   const group = new THREE.Group(); scene.add(group);
@@ -253,14 +253,15 @@ export function toneScene(canvas, { tones = [1, 2, 3, 4], spin = true } = {}) {
     const C = TONE_COLORS();
     // pitch grid lines 1-5
     for (let k = 1; k <= 5; k++) {
-      const ln = new THREE.Mesh(new THREE.BoxGeometry(7.2, .015, .015), new THREE.MeshBasicMaterial({ color: isDark() ? 0x4a443b : 0xcfc3aa }));
-      ln.position.set(0, (k - 1) * 1.1, -1.6); group.add(ln);
+      const ln = new THREE.Mesh(new THREE.BoxGeometry(list.length === 1 ? 7.2 : 9.4, .015, .015), new THREE.MeshBasicMaterial({ color: isDark() ? 0x4a443b : 0xcfc3aa }));
+      ln.position.set(0, (k - 1) * 1.1, -.6); group.add(ln);
     }
     list.forEach((t, i) => {
       const sh = TONE_SHAPE[t];
-      const z = list.length === 1 ? 0 : (i - (list.length - 1) / 2) * 1.3;
-      const len = t === 0 ? 2.4 : t === 3 ? 6.4 : 5.6;
-      const pts = sh.map((p, j) => new THREE.Vector3(-len / 2 + len * j / (sh.length - 1), (p - 1) * 1.1, z));
+      const multi = list.length > 1;
+      const cx = multi ? (i - (list.length - 1) / 2) * 2.35 : 0, z = 0;
+      const len = multi ? (t === 3 ? 1.9 : 1.6) : (t === 0 ? 2.4 : t === 3 ? 6.4 : 5.6);
+      const pts = sh.map((p, j) => new THREE.Vector3(cx - len / 2 + len * j / (sh.length - 1), (p - 1) * 1.1, z));
       const curve = new THREE.CatmullRomCurve3(pts.length === 2 ? [pts[0], pts[0].clone().lerp(pts[1], .5), pts[1]] : pts);
       curves[t] = curve;
       const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 64, .16, 12, false), new THREE.MeshStandardMaterial({ color: C[t], roughness: .35, metalness: .1, emissive: C[t], emissiveIntensity: .15 }));
@@ -268,7 +269,8 @@ export function toneScene(canvas, { tones = [1, 2, 3, 4], spin = true } = {}) {
       const ball = new THREE.Mesh(new THREE.SphereGeometry(.3, 20, 14), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: C[t], emissiveIntensity: .8 }));
       ball.position.copy(curve.getPoint(0)); group.add(ball); balls[t] = ball;
       const lbl = new THREE.Mesh(new THREE.PlaneGeometry(1.3, .65), new THREE.MeshBasicMaterial({ transparent: true, map: labelTexture([[t ? `Tone ${t}` : "neutral", 90, "#" + C[t].getHexString()]], { w: 512, h: 256 }) }));
-      lbl.position.set(-len / 2 - .9, (sh[0] - 1) * 1.1, z); group.add(lbl);
+      if (multi) lbl.position.set(cx, -.75, z); else lbl.position.set(-len / 2 - .9, (sh[0] - 1) * 1.1, z);
+      group.add(lbl);
     });
   }
   build(); addEventListener("themechange", build);
