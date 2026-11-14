@@ -41,6 +41,7 @@ function matchPy(input, syls) {
   }
   return pos === u.L.length;
 }
+const GAP = '<span class="gap"></span>';
 const hanOnly = s => [...s].filter(c => /[\u4e00-\u9fff]/.test(c));
 // split a word's pinyin into one marked syllable per character, guided by each character's own pinyin
 function wordSyls(w) {
@@ -124,13 +125,13 @@ function buildComp() {
   const q6 = [];
   const withIni = multi.filter(x => x.syls.every(iniOf));
   pick(withIni, 2).forEach(x => {
-    const shown = x.syls.map(s => "__" + s.slice(iniOf(s).length)).join(" ");
+    const shown = x.syls.map(s => GAP + s.slice(iniOf(s).length)).join(" ");
     const ans = x.syls.map(iniOf);
     q6.push({ kind: "text", q: `🔊 <span class="zh">${esc(x.w[0])}</span> &nbsp; <b>${shown}</b> <span class="muted">(write the initials)</span>`, ph: "e.g. l sh", play: x.w[0], answer: ans.join(" "),
       check: v => { const t = v.toLowerCase().split(/[\s,，/、]+/).filter(Boolean); return t.length === ans.length && t.every((y, i) => y === ans[i]); }, why: `${esc(x.w[0])} ${x.w[1]}` });
   });
   pick(multi, 2).forEach(x => {
-    const shown = x.syls.map(s => iniOf(s) + "__").join(" ");
+    const shown = x.syls.map(s => iniOf(s) + GAP).join(" ");
     const fins = x.syls.map(s => s.slice(iniOf(s).length));
     q6.push({ kind: "text", q: `🔊 <span class="zh">${esc(x.w[0])}</span> &nbsp; <b>${shown}</b> <span class="muted">(write the finals with tones)</span>`, ph: "e.g. ao3 i1", play: x.w[0], answer: fins.join(" "),
       check: v => { const t = v.split(/[\s,，/、]+/).filter(Boolean); return t.length === fins.length && t.every((y, i) => matchPy(y, [fins[i]])); }, why: `${esc(x.w[0])} ${x.w[1]}` });
@@ -271,7 +272,7 @@ function run(id) {
         q.get = () => inp.value.trim(); q.lock = () => inp.disabled = true;
         box.append(h("div", {}, inp));
       }
-      box.append(h("div", { class: "why", html: (q.kind ? `<b>Answer:</b> <span class="zh">${esc(q.answer)}</span><br>` : "") + (q.why || "") }));
+      box.append(h("div", { class: "why", html: (q.kind ? `<b>Answer:</b> <span class="${q.zh ? "zh" : ""}" style="font-size:1.1rem">${esc(q.answer)}</span><br>` : "") + (q.why || "") }));
       q.box = box; form.append(box);
     });
   });

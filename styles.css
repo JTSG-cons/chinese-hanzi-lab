@@ -220,3 +220,4 @@ section[data-view].on{display:block;animation:fade .35s ease}
   .mq{break-inside:avoid}
   .mq input[type=text]{border:none;border-bottom:1px solid #000;border-radius:0;width:60%}
 }
+.gap{display:inline-block;min-width:1.7em;height:1em;border-bottom:2px solid var(--seal);margin:0 2px;vertical-align:-2px}
