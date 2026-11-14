@@ -76,11 +76,11 @@ export function audioPanel(lesson) {
     const have = got.filter(Boolean).length;
     const pickFiles = h("input", { type: "file", multiple: "", accept: ".mp3,audio/mpeg", style: "display:none" });
     pickFiles.onchange = async () => { const n = await addFiles(pickFiles.files); add.textContent = `Added ${n} file${n === 1 ? "" : "s"}`; draw(); };
-    const add = h("button", { type: "button", class: have ? "small ghost" : "small", onclick: () => pickFiles.click() }, have ? "Replace recordings" : "➕ Add the recordings");
-    box.replaceChildren(
+    const add = h("button", { type: "button", class: have ? "small ghost" : "small", onclick: () => pickFiles.click() }, have === tracks.length ? "Replace recordings" : have ? "➕ Add more recordings" : "➕ Add the recordings");
+    box.replaceChildren(...[
       h("h3", {}, `🎧 Textbook recordings · Lesson ${lesson}`),
-      have ? null : h("p", { class: "note" }, "Not added in this browser yet. Tap “Add the recordings” and select the MP3s from School/Chinese/textbook-audio (L01-1.mp3 … L05-4.mp3, or the original 01-1.mp3 names). They stay on this device only."),
-      list, have ? h("div", {}, audio, speed, now) : null, h("div", { class: "row", style: "margin-top:8px" }, add, pickFiles));
+      have < tracks.length ? h("p", { class: "note" }, `${have ? `${tracks.length - have} of this lesson's tracks are missing in this browser.` : "Not added in this browser yet."} Tap “${have ? "Add more recordings" : "Add the recordings"}” and select the MP3s from School/Chinese/textbook-audio (L01-1.mp3 … L05-4.mp3; the original 01-1.mp3 names work too). They stay on this device only.`) : null,
+      list, have ? h("div", {}, audio, speed, now) : null, h("div", { class: "row", style: "margin-top:8px" }, add, pickFiles)].filter(Boolean));
   };
   draw();
   return box;
