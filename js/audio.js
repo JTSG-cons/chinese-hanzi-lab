@@ -1,5 +1,5 @@
-// Textbook recordings (汉语教程 Book 1A audio). The MP3s are copyrighted, so they are never published:
-// locally they load from private/audio/, on the public site you add them once and they stay in this browser (IndexedDB).
+// Textbook recordings (汉语教程 Book 1A audio, L1-5). Loaded from audio/ (published at the owner's request),
+// with private/audio/ and files added in this browser (IndexedDB) as fallbacks.
 import { h, esc } from "./core.js";
 
 const T = (n, parts) => parts.map(([k, label]) => [`${String(n).padStart(2, "0")}-${k}`, label]);
@@ -33,7 +33,10 @@ async function urlFor(id) {
   if (urls.has(id)) return urls.get(id);
   let u = null;
   try { const b = await idb("readonly", s => s.get(id)); if (b) u = URL.createObjectURL(b); } catch {}
-  if (!u) { try { const r = await fetch(`private/audio/L${id}.mp3`, { method: "HEAD" }); if (r.ok) u = `private/audio/L${id}.mp3`; } catch {} }
+  for (const dir of ["audio", "private/audio"]) {
+    if (u) break;
+    try { const r = await fetch(`${dir}/L${id}.mp3`, { method: "HEAD" }); if (r.ok) u = `${dir}/L${id}.mp3`; } catch {}
+  }
   urls.set(id, u);
   return u;
 }

@@ -11,4 +11,4 @@ A visual study site for 汉语教程 (3rd ed.) Book 1A lessons 1-8 (182 characte
 
 Static HTML, CSS and JS with no build step. three.js, Hanzi Writer (+ stroke data for the 182 characters only) and ts-fsrs are bundled in `vendor/`.
 
-Run locally: `python -m http.server` in this folder, then open http://localhost:8000. The local `private/` folder (not published) adds the textbook's own lesson texts.
+Run locally: `python -m http.server` in this folder, then open http://localhost:8000. The local `private/` folder (not published) adds the textbook's own lesson texts. `audio/` holds the textbook recordings for L1-5.
