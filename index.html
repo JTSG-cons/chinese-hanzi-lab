@@ -20,6 +20,7 @@
     <a href="#reading">Reading</a>
     <a href="#listening">Listening</a>
     <a href="#overview">Overview</a>
+    <a href="#comp">Comprehensive</a>
     <a href="#mock">Mock exams</a>
   </nav>
   <button id="theme-btn" class="ghost small" type="button">Theme</button>
@@ -136,6 +137,22 @@
     </div>
   </section>
 
+  <!-- COMPREHENSIVE -->
+  <section data-view="comp">
+    <div class="view-head">
+      <h1>Comprehensive Chinese <small class="muted" style="font-size:.55em">L1-5 · exam Mon 16 Nov</small></h1>
+      <p class="muted">The 10 mid-term question types, one at a time with instant marking. Listening types use the textbook's own exercises and recordings where they exist (🎧 book audio), otherwise your device's voice. Headphones on.</p>
+      <div class="row"><a class="btn" href="#mock/comp">⏱ Timed mock (all 10 types)</a><a class="btn ghost" href="#comp/mix">✦ Mixed practice</a></div>
+    </div>
+    <div class="ctypes" id="comp-types"></div>
+    <div class="panel drill-card comp-card" id="comp-practice"></div>
+    <div class="panel">
+      <h2>Book exercises with the real recording</h2>
+      <div class="chips" id="comp-book-ls"></div>
+      <div id="comp-book"></div>
+    </div>
+  </section>
+
   <!-- MOCK -->
   <section data-view="mock">
     <div class="view-head">
@@ -160,6 +177,8 @@
 <script src="data/lessons.js"></script>
 <script src="data/hanzi.js"></script>
 <script src="data/overview.js"></script>
+<script src="data/bookex.js"></script>
+<script src="data/clips.js" onerror="window.CLIPS=null"></script>
 <script src="private/texts.js" onerror="window.BOOK_TEXTS=null"></script>
 <script src="vendor/fsrs/ts-fsrs.umd.js"></script>
 <script src="vendor/hanzi-writer/hanzi-writer.min.js"></script>

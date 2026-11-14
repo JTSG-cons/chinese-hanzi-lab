@@ -40,7 +40,7 @@ export const PLAN = [
     ["12:00", 60, "Lunch", "", ""],
     ["13:00", 25, "Listening L1-5", "Textbook 练习 recordings L4-5 at 0.9×, then the initial/final drills: this is the listening half of the Comprehensive exam.", "#listening"],
     ["13:30", 60, "MOCK: Comprehensive L1-5", "The real mid-term's 10 question types. Headphones on, write the typed answers on paper too.", "#mock/comp"],
-    ["14:35", 25, "Fix the mock mistakes", "Start with the weakest section listed under your score. Open each wrong character card and drill it again.", "#drill"],
+    ["14:35", 25, "Fix the mock mistakes", "Comprehensive page: practise the 2 weakest question types until each is 80%+.", "#comp"],
     ["15:00", 30, "MOCK: China Overview", "Timed.", "#mock/ov"],
     ["15:45", 30, "Fix Overview gaps", "Re-read only the notes behind wrong answers. Say the key sentences.", "#overview"],
     ["16:30", 30, "Break", "", ""],
@@ -50,7 +50,7 @@ export const PLAN = [
     ["20:15", 15, "Light pass", "Palace walk L1-5 + one timeline scroll. Then sleep early (before 22:30).", "#palace/1"]
   ]},
   { date: "11-16", label: "Mon 16 Nov", sub: "EXAM: Comprehensive + Overview · start L6", blocks: [
-    ["07:30", 30, "Warm-up", "Due reviews + Overview key words. Nothing new.", "#drill"],
+    ["07:30", 30, "Warm-up", "Comprehensive page: Mixed practice, 15 questions with the book audio. Then Overview key words. Nothing new.", "#comp/mix"],
     ["exam:comp", 0, "EXAM: Comprehensive Chinese L1-5", "", ""],
     ["exam:ov", 0, "EXAM: China Overview", "", ""],
     ["18:00", 25, "Lesson 6 characters", "Palace room 6 (library): 请问 贵姓 叫 名字 哪国人 认识 高兴 学习 什么 书 谁 的…", "#palace/6"],

@@ -1,6 +1,6 @@
 // Timed mock exams. A fresh paper is generated every time.
 import { $, h, LESSONS, CHARS, HANZI, OVERVIEW, PY, shuffle, pick, esc, colorPinyin, plain, toneOf, withTone, speak, read, write } from "./core.js";
-import { sentences } from "./drills.js";
+import { sentences, tokenize } from "./drills.js";
 import { listenChars, split } from "./pages.js";
 
 const MOCKS = {
@@ -77,99 +77,183 @@ function mutate(syls) {
   return s.join("");
 }
 
+// ---------- real textbook audio clips ----------
+const clipAudio = typeof Audio !== "undefined" ? new Audio() : null;
+let clipTimer = 0;
+export function playClip(c, rate = 1) {
+  if (!clipAudio || !c) return;
+  clearTimeout(clipTimer);
+  const src = `audio/L${c.f}.mp3`;
+  const go = () => {
+    clipAudio.currentTime = c.s; clipAudio.playbackRate = rate; clipAudio.play().catch(() => {});
+    clipTimer = setTimeout(() => clipAudio.pause(), ((c.e - c.s) / rate) * 1000 + 120);
+  };
+  if (!clipAudio.src.endsWith(src)) { clipAudio.src = src; clipAudio.addEventListener("loadedmetadata", go, { once: true }); }
+  else if (clipAudio.readyState >= 1) go(); else clipAudio.addEventListener("loadedmetadata", go, { once: true });
+}
+export const playQ = q => q.clip ? playClip(q.clip) : q.play ? speak(q.play, .7) : null;
+const srcTag = q => q.clip ? ` <span class="src-tag">🎧 book audio ${q.clip.f}</span>` : "";
+
+// book exercise items (data/bookex.js) with their clip in the 练习 recording (data/clips.js)
+let BOOK = null;
+const syllCount = py => (plain(py).toLowerCase().match(/[aeiouü]+/g) || []).length;
+function iniFin(py) { const p = plain(py).toLowerCase(), ini = iniOf(p); return { ini, fin: p.slice(ini.length) }; }
+function bookItems() {
+  if (BOOK) return BOOK;
+  BOOK = [];
+  const BX = window.BOOKEX || {}, CX = (window.CLIPS && window.CLIPS.ex) || {};
+  for (const l of [1, 2, 3, 4, 5]) {
+    const B = BX[l]; if (!B) continue;
+    B.rows.forEach((g, gi) => g.r.forEach((row, ri) => {
+      const items = row.split("|").map(s => s.trim());
+      items.forEach((py, ii) => {
+        const t = CX[l] && CX[l][gi] && CX[l][gi][ri] && CX[l][gi][ri][ii];
+        if (t) BOOK.push({ l, kind: g.kind, py, row: items, single: !/\s/.test(py) && syllCount(py) === 1, clip: { f: B.track, s: t[0], e: t[1] } });
+      });
+    }));
+  }
+  return BOOK;
+}
+const bookLines = () => ((window.CLIPS && window.CLIPS.lines) || []).map(([f, s, e, hz, py, en, l]) => ({ clip: { f, s, e }, hz, py, en, l }));
+// take n questions, about 2/3 from the book (real audio) when there are enough
+function mix(bookQs, genQs, n) {
+  const nb = Math.min(bookQs.length, Math.ceil(n * 2 / 3));
+  return shuffle([...pick(bookQs, nb), ...pick(genQs, n - nb)]).slice(0, n);
+}
+
 // ---------- Comprehensive Chinese mid-term: the 10 question types ----------
-function buildComp() {
+let CTX = null;
+function ctx() {
+  if (CTX) return CTX;
   const ls = MOCKS.comp.ls;
   const pool = listenChars(ls);
   const W = words(ls).filter(x => x.w[4] !== "p").map(x => ({ ...x, syls: wordSyls(x.w) })).filter(x => x.syls);
   const multi = W.filter(x => x.syls.length >= 2);
-  const S = [];
-
-  // 一 initials
-  const allIni = [...new Set(pool.map(r => split(r.py).ini).filter(Boolean))];
-  S.push(section("一、Underline the initial you hear", pick(pool.filter(r => split(r.py).ini), 6).map(r => {
-    const { ini } = split(r.py);
-    return mc("🔊 Which initial?", ini, distract(INI_GROUPS, ini, allIni, 2), `${r.c} ${r.py}`, { play: r.c });
-  })));
-  // 二 finals
-  const allFin = [...new Set(pool.map(r => split(r.py).fin).filter(Boolean))];
-  S.push(section("二、Underline the final you hear", pick(pool, 6).map(r => {
-    const { fin } = split(r.py);
-    return mc("🔊 Which final?", fin, distract(FIN_GROUPS, fin, allFin, 2), `${r.c} ${r.py} → final <b>${fin}</b>`, { play: r.c });
-  })));
-  // 三 word you hear: pinyin options that differ by one tone, initial or final
-  S.push(section("三、Choose the word you hear", pick(multi, 6).map(x => {
-    const right = x.syls.join(""), wrongs = new Set();
-    for (let k = 0; k < 30 && wrongs.size < 3; k++) { const m = mutate(x.syls); if (m && m !== right) wrongs.add(m); }
-    return mc("🔊 Which word did you hear?", right, [...wrongs], `${esc(x.w[0])} ${x.w[1]}: ${esc(x.w[3])}`, { play: x.w[0], pyOpts: true });
-  })));
-  // 四 word you hear in the sentence
   const ss = sentences(ls);
-  const vocab = W.map(x => x.w);
-  const q4 = [];
-  for (const s of shuffle(ss)) {
-    const inS = vocab.filter(w => s.toks.includes(w[0]) && w[0].length >= 1 && !"的吗了吧呢".includes(w[0]));
-    if (!inS.length) continue;
-    const right = pick(inS, 1)[0];
-    const others = vocab.filter(w => !s.hz.includes(w[0]) && w[0].length === right[0].length);
-    if (others.length < 3) continue;
-    const fmt = w => `${w[0]} ${w[1]}`;
-    q4.push(mc("🔊 Which word is in the sentence you hear?", fmt(right), pick(others, 3).map(fmt), `${esc(s.hz)} · ${esc(s.py)}`, { play: s.hz, zhOpts: true }));
-    if (q4.length >= 5) break;
-  }
-  S.push(section("四、Choose the word you hear in the sentence", q4));
-  // 五 sentence you hear
-  const L = lines(ls);
-  S.push(section("五、Choose the sentence you hear", pick(L, 5).map(({ l }) => mc("🔊 Which sentence did you hear?", l[1], pick(L.filter(x => x.l[1] !== l[1]), 3).map(x => x.l[1]), `${esc(l[2])} · ${esc(l[3])}`, { play: l[1], zhOpts: true }))));
-  // 六 fill in missing pinyin parts: initials, finals, tones
-  const q6 = [];
-  const withIni = multi.filter(x => x.syls.every(iniOf));
-  pick(withIni, 2).forEach(x => {
-    const shown = x.syls.map(s => GAP + s.slice(iniOf(s).length)).join(" ");
-    const ans = x.syls.map(iniOf);
-    q6.push({ kind: "text", q: `🔊 <span class="zh">${esc(x.w[0])}</span> &nbsp; <b>${shown}</b> <span class="muted">(write the initials)</span>`, ph: "e.g. l sh", play: x.w[0], answer: ans.join(" "),
-      check: v => { const t = v.toLowerCase().split(/[\s,，/、]+/).filter(Boolean); return t.length === ans.length && t.every((y, i) => y === ans[i]); }, why: `${esc(x.w[0])} ${x.w[1]}` });
-  });
-  pick(multi, 2).forEach(x => {
-    const shown = x.syls.map(s => iniOf(s) + GAP).join(" ");
-    const fins = x.syls.map(s => s.slice(iniOf(s).length));
-    q6.push({ kind: "text", q: `🔊 <span class="zh">${esc(x.w[0])}</span> &nbsp; <b>${shown}</b> <span class="muted">(write the finals with tones)</span>`, ph: "e.g. ao3 i1", play: x.w[0], answer: fins.join(" "),
-      check: v => { const t = v.split(/[\s,，/、]+/).filter(Boolean); return t.length === fins.length && t.every((y, i) => matchPy(y, [fins[i]])); }, why: `${esc(x.w[0])} ${x.w[1]}` });
-  });
-  pick(multi, 2).forEach(x => {
-    const tones = x.syls.map(toneOf);
-    q6.push({ kind: "text", q: `🔊 <span class="zh">${esc(x.w[0])}</span> &nbsp; <b>${x.syls.map(plain).join(" ")}</b> <span class="muted">(write the tones: 1-4, 0 = neutral)</span>`, ph: "e.g. 3 1", play: x.w[0], answer: tones.join(" "),
-      check: v => { const d = (v.match(/[0-5]/g) || []).map(n => +n % 5); return (d.length === tones.length && d.every((y, i) => y === tones[i])) || matchPy(v, x.syls); }, why: `${esc(x.w[0])} ${colorPinyin(x.w[1])}` });
-  });
-  S.push(section("六、Fill in the missing pinyin parts: initials, finals and tones", q6, "Type finals as ao3 or ǎo, and ü as v."));
-  // 七 pinyin for each character
-  S.push(section("七、Write the pinyin for each Chinese character", pick(W, 6).map(x => {
-    const cit = hanOnly(x.w[0]).map(c => PY[c]);
-    return { kind: "text", q: `<span class="zh" style="font-size:1.6rem">${esc(x.w[0])}</span>`, ph: "pinyin, e.g. lao3shi1 or lǎoshī", answer: x.w[1],
-      check: v => matchPy(v, x.syls) || matchPy(v, cit), why: `${colorPinyin(x.w[1])}: ${esc(x.w[3])}` };
-  }), "Tone marks or tone numbers both count (nǐ hǎo = ni3 hao3)."));
-  // 八 Chinese words for each pinyin
   const byPy = {};
   W.forEach(x => { const k = x.syls.join(""); (byPy[k] = byPy[k] || new Set()).add(x.w[0]); });
-  S.push(section("八、Write the Chinese words for each pinyin", pick(W, 6).map(x => {
-    const ok = byPy[x.syls.join("")];
-    return { kind: "text", zh: true, q: `<b style="font-size:1.3rem">${colorPinyin(x.w[1])}</b>`, ph: "汉字", answer: [...ok].join(" / "),
-      check: v => ok.has(v.replace(/[\s，。！？,.!?]/g, "")), why: `${esc(x.w[0])}: ${esc(x.w[3])}` };
-  }), "Write it on paper first (the real exam is handwritten), then type it to check."));
-  // 九 answer the questions in characters (self-marked against a model answer)
   const pairs = [];
   for (const k of ls) for (const d of [LESSONS[k - 1].practice, (window.BOOK_TEXTS && window.BOOK_TEXTS[k]) || []])
-    for (let i = 0; i < d.length - 1; i++) if (/[？?]/.test(d[i][1]) && d[i][0] !== d[i + 1][0] && !/[？?]/.test(d[i + 1][1])) pairs.push([d[i], d[i + 1]]);
-  const strip = v => v.replace(/[\s，。！？,.!?、：:；;“”]/g, "");
-  S.push(section("九、Answer the questions in Chinese characters", pick(pairs, 4).map(([a, b]) => ({
-    kind: "self", zh: true, q: `<span class="zh" style="font-size:1.4rem">${esc(a[1])}</span>`, ph: "用汉字回答", answer: b[1],
-    check: v => strip(v) === strip(b[1]), why: `${esc(a[2])} (${esc(a[3])})<br>Model: <span class="zh">${esc(b[1])}</span> ${esc(b[2])} (${esc(b[3])})` })), "Any correct answer counts. After marking, compare with the model answer and mark yourself."));
-  // 十 word order
-  S.push(section("十、Put the words in order to make a sentence", pick(ss.filter(s => s.toks.length >= 3 && s.toks.length <= 7 && new Set(s.toks).size === s.toks.length && !s.toks.every(t => /^[一二三四五六七八九十]+$/.test(t))), 5).map(s => {
-    let toks = shuffle(s.toks); for (let k = 0; k < 5 && toks.join("") === s.toks.join(""); k++) toks = shuffle(s.toks);
-    return { kind: "order", toks, answer: s.hz.replace(/[，。！？、]/g, ""), check: v => v === s.toks.join(""), q: "Tap the words in order.", why: `${esc(s.hz)} · ${esc(s.py)} (${esc(s.en)})` };
-  })));
-  return S.filter(x => x.qs.length);
+    for (let i = 0; i < d.length - 1; i++) if (/[？?]/.test(d[i][1]) && d[i][0] !== d[i + 1][0] && !/[？?]/.test(d[i + 1][1])) pairs.push([d[i][1], d[i][2], [d[i + 1][1]], d[i + 1][2], d[i][3], d[i + 1][3], 0]);
+  for (const k of ls) for (const [q, py, ans] of (((window.BOOKEX || {})[k] || {}).questions || [])) pairs.push([q, py, ans, "", "", "", k]);
+  return CTX = { ls, pool, W, multi, ss, byPy, pairs,
+    allIni: [...new Set(pool.map(r => split(r.py).ini).filter(Boolean))],
+    allFin: [...new Set(pool.map(r => split(r.py).fin).filter(Boolean))],
+    vocab: W.map(x => x.w), L: lines(ls) };
+}
+const strip = v => v.replace(/[\s，。！？,.!?、：:；;“”]/g, "");
+
+export const COMP_TYPES = [
+  { id: "ini", n: 6, title: "一、Underline the initial you hear", gen(n) {
+    const C = ctx();
+    const book = bookItems().filter(b => b.single && iniFin(b.py).ini).map(b => {
+      const { ini, fin } = iniFin(b.py);
+      const alts = [...new Set(b.row.filter(x => syllCount(x) === 1).map(iniFin).filter(x => x.ini && x.ini !== ini && x.fin === fin).map(x => x.ini))];
+      if (!alts.length) alts.push(...distract(INI_GROUPS, ini, C.allIni, 2));
+      return mc("🔊 Which initial?" + srcTag(b), ini, alts.slice(0, 3), `${b.py} (book lesson ${b.l}, p.${(window.BOOKEX[b.l] || {}).page})`, { clip: b.clip });
+    });
+    const gen = pick(C.pool.filter(r => split(r.py).ini), n).map(r => { const { ini } = split(r.py); return mc("🔊 Which initial?", ini, distract(INI_GROUPS, ini, C.allIni, 2), `${r.c} ${r.py}`, { play: r.c }); });
+    return mix(book, gen, n);
+  } },
+  { id: "fin", n: 6, title: "二、Underline the final you hear", gen(n) {
+    const C = ctx();
+    const book = bookItems().filter(b => b.single).map(b => {
+      const { ini, fin } = iniFin(b.py);
+      const alts = [...new Set(b.row.filter(x => syllCount(x) === 1).map(iniFin).filter(x => x.fin !== fin && x.ini === ini).map(x => x.fin))];
+      if (!alts.length) alts.push(...distract(FIN_GROUPS, fin, C.allFin, 2));
+      return mc("🔊 Which final?" + srcTag(b), fin, alts.slice(0, 3), `${b.py} → final <b>${fin}</b> (book lesson ${b.l})`, { clip: b.clip });
+    });
+    const gen = pick(C.pool, n).map(r => { const { fin } = split(r.py); return mc("🔊 Which final?", fin, distract(FIN_GROUPS, fin, C.allFin, 2), `${r.c} ${r.py} → final <b>${fin}</b>`, { play: r.c }); });
+    return mix(book, gen, n);
+  } },
+  { id: "word", n: 6, title: "三、Choose the word you hear", gen(n) {
+    const C = ctx();
+    const book = bookItems().filter(b => b.kind === "word" || b.kind === "mixed").map(b =>
+      mc("🔊 Which one did you hear?" + srcTag(b), b.py, pick(b.row.filter(x => x !== b.py), 3), `${b.py} (book 辨音辨调, lesson ${b.l})`, { clip: b.clip, pyOpts: true }));
+    const gen = pick(C.multi, n).map(x => {
+      const right = x.syls.join(""), wrongs = new Set();
+      for (let k = 0; k < 30 && wrongs.size < 3; k++) { const m = mutate(x.syls); if (m && m !== right) wrongs.add(m); }
+      return mc("🔊 Which word did you hear?", right, [...wrongs], `${esc(x.w[0])} ${x.w[1]}: ${esc(x.w[3])}`, { play: x.w[0], pyOpts: true });
+    });
+    return mix(book, gen, n);
+  } },
+  { id: "insent", n: 5, title: "四、Choose the word you hear in the sentence", gen(n) {
+    const C = ctx();
+    const fmt = w => `${w[0]} ${w[1]}`;
+    const make = (hz, py, extra) => {
+      const toks = tokenize(hz.replace(/[（(][^)）]*[)）]/g, ""), 5);
+      const inS = C.vocab.filter(w => toks.includes(w[0]) && !"的吗了吧呢".includes(w[0]));
+      if (!inS.length) return null;
+      const right = pick(inS, 1)[0];
+      const others = C.vocab.filter(w => !hz.includes(w[0]) && w[0].length === right[0].length);
+      if (others.length < 3) return null;
+      return mc("🔊 Which word is in the sentence you hear?" + srcTag(extra), fmt(right), pick(others, 3).map(fmt), `${esc(hz)} · ${esc(py)}`, { zhOpts: true, ...extra });
+    };
+    const book = bookLines().map(x => make(x.hz, x.py, { clip: x.clip })).filter(Boolean);
+    const gen = shuffle(C.ss).slice(0, n * 3).map(s => make(s.hz, s.py, { play: s.hz })).filter(Boolean);
+    return mix(book, gen, n);
+  } },
+  { id: "sent", n: 5, title: "五、Choose the sentence you hear", gen(n) {
+    const C = ctx();
+    const BL = bookLines();
+    const allHz = [...new Set([...BL.map(x => x.hz), ...C.L.map(x => x.l[1])])];
+    const book = BL.map(x => mc("🔊 Which sentence did you hear?" + srcTag(x), x.hz, pick(allHz.filter(y => y !== x.hz), 3), `${esc(x.py)}${x.en ? " · " + esc(x.en) : ""}`, { clip: x.clip, zhOpts: true }));
+    const gen = pick(C.L, n).map(({ l }) => mc("🔊 Which sentence did you hear?", l[1], pick(allHz.filter(y => y !== l[1]), 3), `${esc(l[2])} · ${esc(l[3])}`, { play: l[1], zhOpts: true }));
+    return mix(book, gen, n);
+  } },
+  { id: "parts", n: 6, title: "六、Fill in the missing pinyin parts: initials, finals and tones", note: "Type finals as ao3 or ǎo, and ü as v.", gen(n) {
+    const C = ctx(), out = [];
+    const kinds = shuffle(["ini", "fin", "tone"]);
+    for (let i = 0; i < n; i++) {
+      const k = kinds[i % 3];
+      if (k === "ini") {
+        const x = pick(C.multi.filter(y => y.syls.every(iniOf)), 1)[0];
+        const ans = x.syls.map(iniOf);
+        out.push({ kind: "text", q: `🔊 <span class="zh">${esc(x.w[0])}</span> &nbsp; <b>${x.syls.map(s => GAP + s.slice(iniOf(s).length)).join(" ")}</b> <span class="muted">(write the initials)</span>`, ph: "e.g. l sh", play: x.w[0], answer: ans.join(" "),
+          check: v => { const t = v.toLowerCase().split(/[\s,，/、]+/).filter(Boolean); return t.length === ans.length && t.every((y, j) => y === ans[j]); }, why: `${esc(x.w[0])} ${x.w[1]}` });
+      } else if (k === "fin") {
+        const x = pick(C.multi, 1)[0];
+        const fins = x.syls.map(s => s.slice(iniOf(s).length));
+        out.push({ kind: "text", q: `🔊 <span class="zh">${esc(x.w[0])}</span> &nbsp; <b>${x.syls.map(s => iniOf(s) + GAP).join(" ")}</b> <span class="muted">(write the finals with tones)</span>`, ph: "e.g. ao3 i1", play: x.w[0], answer: fins.join(" "),
+          check: v => { const t = v.split(/[\s,，/、]+/).filter(Boolean); return t.length === fins.length && t.every((y, j) => matchPy(y, [fins[j]])); }, why: `${esc(x.w[0])} ${x.w[1]}` });
+      } else {
+        const x = pick(C.multi, 1)[0];
+        const tones = x.syls.map(toneOf);
+        out.push({ kind: "text", q: `🔊 <span class="zh">${esc(x.w[0])}</span> &nbsp; <b>${x.syls.map(plain).join(" ")}</b> <span class="muted">(write the tones: 1-4, 0 = neutral)</span>`, ph: "e.g. 3 1", play: x.w[0], answer: tones.join(" "),
+          check: v => { const d = (v.match(/[0-5]/g) || []).map(m => +m % 5); return (d.length === tones.length && d.every((y, j) => y === tones[j])) || matchPy(v, x.syls); }, why: `${esc(x.w[0])} ${colorPinyin(x.w[1])}` });
+      }
+    }
+    return out;
+  } },
+  { id: "py", n: 6, title: "七、Write the pinyin for each Chinese character", note: "Tone marks or tone numbers both count (nǐ hǎo = ni3 hao3).", gen(n) {
+    return pick(ctx().W, n).map(x => {
+      const cit = hanOnly(x.w[0]).map(c => PY[c]);
+      return { kind: "text", q: `<span class="zh" style="font-size:1.6rem">${esc(x.w[0])}</span>`, ph: "pinyin, e.g. lao3shi1 or lǎoshī", answer: x.w[1],
+        check: v => matchPy(v, x.syls) || matchPy(v, cit), why: `${colorPinyin(x.w[1])}: ${esc(x.w[3])}` };
+    });
+  } },
+  { id: "hz", n: 6, title: "八、Write the Chinese words for each pinyin", note: "Write it on paper first (the real exam is handwritten), then type it to check.", gen(n) {
+    const C = ctx();
+    return pick(C.W, n).map(x => {
+      const ok = C.byPy[x.syls.join("")];
+      return { kind: "text", zh: true, q: `<b style="font-size:1.3rem">${colorPinyin(x.w[1])}</b>`, ph: "汉字", answer: [...ok].join(" / "),
+        check: v => ok.has(v.replace(/[\s，。！？,.!?]/g, "")), why: `${esc(x.w[0])}: ${esc(x.w[3])}` };
+    });
+  } },
+  { id: "answer", n: 4, title: "九、Answer the questions in Chinese characters", note: "Any correct answer counts. After marking, compare with the model answer and mark yourself.", gen(n) {
+    return pick(ctx().pairs, n).map(([q, py, ans, apy, qen, aen, bookL]) => ({
+      kind: "self", zh: true, q: `<span class="zh" style="font-size:1.4rem">${esc(q)}</span>${bookL ? ` <span class="src-tag">book L${bookL}</span>` : ""}`, ph: "用汉字回答", answer: ans.join(" / "),
+      check: v => ans.some(a => strip(v) === strip(a)), why: `${esc(py)}${qen ? ` (${esc(qen)})` : ""}<br>Model: <span class="zh">${esc(ans.join(" / "))}</span>${apy ? ` ${esc(apy)}` : ""}${aen ? ` (${esc(aen)})` : ""}` }));
+  } },
+  { id: "order", n: 5, title: "十、Put the words in order to make a sentence", gen(n) {
+    return pick(ctx().ss.filter(s => s.toks.length >= 3 && s.toks.length <= 7 && new Set(s.toks).size === s.toks.length && !s.toks.every(t => /^[一二三四五六七八九十]+$/.test(t))), n).map(s => {
+      let toks = shuffle(s.toks); for (let k = 0; k < 5 && toks.join("") === s.toks.join(""); k++) toks = shuffle(s.toks);
+      return { kind: "order", toks, answer: s.hz.replace(/[，。！？、]/g, ""), check: v => v === s.toks.join(""), q: "Tap the words in order.", why: `${esc(s.hz)} · ${esc(s.py)} (${esc(s.en)})` };
+    });
+  } }
+];
+function buildComp() {
+  return COMP_TYPES.map(t => section(t.title, t.gen(t.n), t.note || "")).filter(x => x.qs.length);
 }
 
 function cloze(ls, n) {
@@ -241,6 +325,48 @@ function orderWidget(q, onChange) {
   return [line, pool];
 }
 
+// one question → its DOM box. onAnswered(has) fires when an answer is given or removed.
+export function renderQuestion(q, num, onAnswered = () => {}) {
+  const box = h("div", { class: "mq" }, h("div", { class: "q", html: `${num ? num + ". " : ""}${q.q}` }));
+  if (q.play || q.clip) box.append(h("button", { class: "small", type: "button", onclick: () => playQ(q) }, "🔊 Play"));
+  if (!q.kind) {
+    q.opts.forEach((o, k) => {
+      const lab = h("label", {}, h("input", { type: "radio", name: `q${Math.random().toString(36).slice(2)}`, value: k }), h("span", { class: q.zhOpts ? "zh" : "", style: q.zhOpts ? "font-size:1.3rem" : q.pyOpts ? "font-size:1.15rem" : "", html: optHtml(q, o) }));
+      box.append(lab);
+    });
+    const name = `q${Math.random().toString(36).slice(2)}`;
+    box.querySelectorAll("input").forEach((inp, k) => { inp.name = name; inp.onchange = () => { q.picked = k; onAnswered(true); }; });
+  } else if (q.kind === "order") {
+    box.append(...orderWidget(q, onAnswered));
+  } else {
+    const inp = h("input", { type: "text", placeholder: q.ph || "", autocomplete: "off", autocapitalize: "off", spellcheck: "false", class: q.zh ? "zh" : "", lang: q.zh ? "zh-CN" : "en" });
+    inp.oninput = () => onAnswered(!!inp.value.trim());
+    q.get = () => inp.value.trim(); q.lock = () => inp.disabled = true; q.input = inp;
+    box.append(h("div", {}, inp));
+  }
+  box.append(h("div", { class: "why", html: (q.kind ? `<b>Answer:</b> <span class="${q.zh ? "zh" : ""}" style="font-size:1.1rem">${esc(q.answer)}</span><br>` : "") + (q.why || "") }));
+  q.box = box;
+  return box;
+}
+// mark one question in place. onSelf(ok) fires if the user re-marks a self-marked answer.
+export function gradeQuestion(q, onSelf = () => {}) {
+  if (!q.kind) {
+    q.ok = q.picked === q.ans;
+    const labs = q.box.querySelectorAll("label");
+    labs[q.ans]?.classList.add("correct"); if (q.picked != null && !q.ok) labs[q.picked]?.classList.add("picked");
+    q.box.querySelectorAll("input").forEach(x => x.disabled = true);
+  } else {
+    const v = q.get(); q.ok = !!v && q.check(v); q.lock();
+    if (q.kind === "self" && !q.ok && v) {
+      const mark = ok => { q.ok = ok; q.box.classList.toggle("ok", ok); q.box.classList.toggle("no", !ok); onSelf(ok); };
+      q.box.append(h("div", { class: "row", style: "margin-top:6px" }, h("span", { class: "muted" }, "Compare with the model. Was yours correct?"),
+        h("button", { class: "small", type: "button", onclick: () => mark(true) }, "✓ Yes"), h("button", { class: "small ghost", type: "button", onclick: () => mark(false) }, "✗ No")));
+    }
+  }
+  q.box.classList.add(q.ok ? "ok" : "no");
+  return q.ok;
+}
+
 let timer = null;
 function run(id) {
   const M = MOCKS[id], S = BUILD[id]();
@@ -254,27 +380,7 @@ function run(id) {
   S.forEach(sec => {
     form.append(h("h3", { style: "margin-top:22px" }, sec.title));
     if (sec.note) form.append(h("p", { class: "note" }, sec.note));
-    sec.qs.forEach(q => {
-      const i = qn++;
-      const box = h("div", { class: "mq", "data-i": i }, h("div", { class: "q", html: `${i + 1}. ${q.q}` }));
-      if (q.play) box.append(h("button", { class: "small", type: "button", onclick: () => speak(q.play, .7) }, "🔊 Play"));
-      if (!q.kind) {
-        q.opts.forEach((o, k) => {
-          const lab = h("label", {}, h("input", { type: "radio", name: `q${i}`, value: k }), h("span", { class: q.zhOpts ? "zh" : "", style: q.zhOpts ? "font-size:1.3rem" : q.pyOpts ? "font-size:1.15rem" : "", html: optHtml(q, o) }));
-          lab.querySelector("input").onchange = () => { q.picked = k; answered.add(i); count(); };
-          box.append(lab);
-        });
-      } else if (q.kind === "order") {
-        box.append(...orderWidget(q, has => { has ? answered.add(i) : answered.delete(i); count(); }));
-      } else {
-        const inp = h("input", { type: "text", placeholder: q.ph || "", autocomplete: "off", autocapitalize: "off", spellcheck: "false", class: q.zh ? "zh" : "", lang: q.zh ? "zh-CN" : "en" });
-        inp.oninput = () => { inp.value.trim() ? answered.add(i) : answered.delete(i); count(); };
-        q.get = () => inp.value.trim(); q.lock = () => inp.disabled = true;
-        box.append(h("div", {}, inp));
-      }
-      box.append(h("div", { class: "why", html: (q.kind ? `<b>Answer:</b> <span class="${q.zh ? "zh" : ""}" style="font-size:1.1rem">${esc(q.answer)}</span><br>` : "") + (q.why || "") }));
-      q.box = box; form.append(box);
-    });
+    sec.qs.forEach(q => { const i = qn++; form.append(renderQuestion(q, i + 1, has => { has ? answered.add(i) : answered.delete(i); count(); })); });
   });
   const submit = h("button", { class: "btn", type: "button", style: "margin:20px 0", onclick: () => grade() }, "Submit and mark");
   const result = h("div");
@@ -297,26 +403,12 @@ function run(id) {
     result.replaceChildren(h("div", { class: "panel" }, h("div", { class: "score" }, `${score}/${total} · ${pct}%`),
       h("p", {}, pct >= 85 ? "Exam-ready. Keep the daily reviews going." : pct >= 65 ? "Close. Read every red answer above, then drill the weak sections." : "Not yet. Go back to the plan blocks for the weak sections, then try a fresh mock."),
       weak.length ? h("ul", {}, ...weak.map(([t, bad, n]) => h("li", {}, `${t}: ${bad}/${n} wrong`))) : "",
+      id === "comp" ? h("a", { class: "btn ghost", href: "#comp", style: "margin-right:8px" }, "Practise the weak types") : "",
       h("button", { class: "btn ghost", type: "button", onclick: () => run(id) }, "New paper")));
   }
   function grade() {
     if (graded) return; graded = true; clearInterval(timer);
-    all.forEach(q => {
-      if (!q.kind) {
-        q.ok = q.picked === q.ans;
-        const labs = q.box.querySelectorAll("label");
-        labs[q.ans]?.classList.add("correct"); if (q.picked != null && !q.ok) labs[q.picked]?.classList.add("picked");
-        q.box.querySelectorAll("input").forEach(x => x.disabled = true);
-      } else {
-        const v = q.get(); q.ok = !!v && q.check(v); q.lock();
-        if (q.kind === "self" && !q.ok && v) {
-          const mark = ok => { q.ok = ok; q.box.classList.toggle("ok", ok); q.box.classList.toggle("no", !ok); showScore(); };
-          q.box.append(h("div", { class: "row", style: "margin-top:6px" }, h("span", { class: "muted" }, "Compare with the model. Was yours correct?"),
-            h("button", { class: "small", type: "button", onclick: () => mark(true) }, "✓ Yes"), h("button", { class: "small ghost", type: "button", onclick: () => mark(false) }, "✗ No")));
-        }
-      }
-      q.box.classList.add(q.ok ? "ok" : "no");
-    });
+    all.forEach(q => gradeQuestion(q, showScore));
     submit.remove();
     showScore();
     result.scrollIntoView({ behavior: "smooth" });

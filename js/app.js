@@ -6,6 +6,7 @@ import { initCard } from "./card.js";
 import { initDrill, enterDrill } from "./drills.js";
 import { initPages, enterReading, enterListening, enterChars, enterPalace, enterOverview } from "./pages.js";
 import { initMock, enterMock } from "./mock.js";
+import { initComp, enterComp } from "./comp.js";
 
 // theme: auto → paper → ink
 const ORDER = ["auto", "light", "dark"], NAMES = { auto: "Auto", light: "Paper", dark: "Ink" };
@@ -19,7 +20,7 @@ $("theme-btn").addEventListener("click", () => { const n = ORDER[(ORDER.indexOf(
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => { if (getTheme() === "auto") applyTheme("auto"); });
 applyTheme(getTheme());
 
-const ENTER = { drill: enterDrill, reading: enterReading, listening: enterListening, chars: enterChars, palace: enterPalace, overview: enterOverview, mock: enterMock };
+const ENTER = { drill: enterDrill, reading: enterReading, listening: enterListening, chars: enterChars, palace: enterPalace, overview: enterOverview, mock: enterMock, comp: enterComp };
 function route() {
   const [view, arg] = (location.hash.slice(1) || "today").split("/");
   const v = document.querySelector(`section[data-view="${view}"]`) ? view : "today";
@@ -29,10 +30,10 @@ function route() {
   });
   document.querySelector(`#tabs a[href="#${v}"]`)?.scrollIntoView({ block: "nearest", inline: "center" });
   try { ENTER[v]?.(arg); } catch (e) { console.error(e); }
-  if (v !== "mock" || !arg) scrollTo({ top: 0 });
+  if ((v !== "mock" && v !== "comp") || !arg) scrollTo({ top: 0 });
 }
 
-initCard(); initToday(); initDrill(); initPages(); initMock();
+initCard(); initToday(); initDrill(); initPages(); initMock(); initComp();
 hero($("hero-3d"));
 addEventListener("hashchange", route);
 route();
