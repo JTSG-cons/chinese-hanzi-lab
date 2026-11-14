@@ -1,0 +1,192 @@
+/* China Overview exam material.
+   Source A: "Overview of China (Chinese Panorama)", Chapter 1 "The Geographical Environment and Chinese Culture" (pp. 1-18).
+   Source B: class slides "Chapter 2 Chinese History in a Nutshell".
+   Add new chapters by pushing to OVERVIEW.sections, OVERVIEW.timeline and OVERVIEW.quiz. */
+window.OVERVIEW = {
+sections: [
+ { id:"terrain", src:"Ch.1 · The Main Characteristics of China's Geographical Environment", title:"Various terrains", zh:"多种多样的地形",
+   points:[
+    "China's outline is compared to a ROOSTER: the northeast is the head, Taiwan Island the foot, the northwest the tail.",
+    "Mao Zedong's line 'Rooster's crow awakens the dreaming earth' 一唱雄鸡天下白 (poem Huanxisha, 1950) describes the founding of the PRC.",
+    "KEY SENTENCE: China's terrain descends from high altitudes in the WEST to sea-level flat land on the EASTERN seaboard: 西高东低 (high in the west, low in the east).",
+    "The tallest peak in the world, Mount Qomolangma 珠穆朗玛峰, is on China's southwestern border. 'Qomolangma' means 'Mother of Earth' in Tibetan; height 8844.43 m (2005 data).",
+    "The east is mostly lowlands and some hills: the most economically advanced area, home to most big cities and industry.",
+    "Between east and west lie dry deserts (the Gobi), steppe and plateaus. Rain clouds from the Pacific can't reach that far inland, and the Himalayas block rain from the Indian Ocean.",
+    "The western central area has freezing winters, scorching summers, big day-night temperature differences and dust storms, so it is not ideal for agriculture.",
+    "The Loess Plateau: rivers carry away topsoil, forming deep gullies, or silt up. The Yellow River, China's SECOND longest river, carries yellow soil, which gives it its colour and name (photo: Hukou waterfall).",
+    "Beijing sits on the frontier between the Gobi desert and arable land. The 'Grain for Green' project (defarming and reforestation) has reduced sandstorms."
+   ]},
+ { id:"enclosed", src:"Ch.1", title:"A relatively enclosed geographical environment", zh:"相对封闭的地理环境",
+   points:[
+    "KEY SENTENCE: China was closed off from the rest of the world by high mountains, deserts such as the Gobi, and seas, and so gradually formed a unique civilisation.",
+    "Southwest: the Himalayas, snow-capped peaks, hard to cross into South Asia.",
+    "Northwest: the Takla Makan Desert 塔克拉玛干沙漠, the world's second largest desert, about the size of Germany, called the 'Sea of Death'.",
+    "North: the Mongolian Plateau, bitterly cold and sparsely populated. East: the ocean was a barrier before the compass and advanced shipbuilding.",
+    "Results: civilisation built on SELF-SUSTAINING AGRICULTURE, not trade; it developed undisturbed, so China is the sole surviving member of the four great ancient civilisations.",
+    "Exchange still happened: the Silk Road (Central Asia, West Asia, Europe); from the late 15th century, sea routes brought Western influence.",
+    "Mid-late 19th century: the door was forced open by gunboats. 1970s: reform and opening-up."
+   ]},
+ { id:"monsoon", src:"Ch.1 · Influences of Geographical Environment over China's Agricultural Civilisation", title:"Monsoon and agricultural civilisation", zh:"季风与农业文明",
+   points:[
+    "China is at the east end of Eurasia, on the west shore of the Pacific.",
+    "Summer: cool, wet winds blow in from the ocean (south → north). Winter: dry, cold air comes south from the Mongolian Plateau. The winds are SEASONAL (monsoon).",
+    "The monsoon reaches only the EAST and CENTER, so they get summer rain for crops. The far west gets very little rain.",
+    "Tip: houses in eastern China face SOUTH (doors and windows), to catch the summer breeze and avoid the winter wind; south-facing flats cost more.",
+    "KEY SENTENCE: The middle to lower reaches of the Yellow River are very suitable for farming (temperature, water, soil); humans first settled there and began Chinese agricultural civilisation.",
+    "The Yellow River is called the 'Mother River' 母亲河.",
+    "Archaeology in the Yangtze Valley (Sanxingdui site near Guanghan, Sichuan; gold mask) shows separate early settlements in the Yellow River and Yangtze valleys combined over time; the Yellow River civilisation is the dominant element."
+   ]},
+ { id:"nature", src:"Ch.1", title:"Man and nature", zh:"自然与人",
+   points:[
+    "Chinese civilisation began with agriculture around the Yellow River Valley; farming stayed the main mode of production for thousands of years.",
+    "Since the 1st century B.C. at the latest: iron tools and the harnessed plough (cattle-ploughing), still the main method until the mid-20th century.",
+    "A hoe from 1,000 years ago looks almost the same as a modern one, so tools barely changed, and changing nature with them was hard.",
+    "'Relying on heaven for food' 靠天吃饭.",
+    "KEY SENTENCE: From the earliest days of agricultural civilisation the Chinese sought to establish a HARMONIOUS relationship with nature (人与自然的和谐关系)."
+   ]},
+ { id:"confucius-agri", src:"Ch.1 · Confucianism and Ancient Agricultural Civilisation", title:"Confucianism and agricultural production", zh:"儒家文化与农耕生产方式",
+   points:[
+    "KEY SENTENCE: Chinese culture is represented at its core by CONFUCIANISM, a culture that developed along with agricultural production.",
+    "The character 儒 contains 雨 (rain) and 而. Some historians think it first meant people performing a ritual dance to pray for rain.",
+    "'Humans at one with nature' 天人合一 is one of the important ideas of Confucianism.",
+    "Household rules: 孝 filial piety, 慈 charity, 尊 men respected, 卑 women humble; extended to the nation: 忠 honour/loyalty, 义 righteousness. 礼 = rites (social hierarchy and how it is shown).",
+    "The household was the basic unit of farming: men tilled the fields, women wove cloth. The Classic of Filial Piety (printed in the Song Dynasty).",
+    "Criticism: over-emphasis on social stratification and male over female.",
+    "Most welcome today: self-renewal and self-improvement. Sayings from The Analects 论语: 有朋自远方来，不亦乐乎 (Is it not a joy to have friends come from afar?), 温故知新 (learn the new by revising the old), 己所不欲，勿施于人 (do not do to others what you do not want yourself), 举一反三 (draw inferences from one instance)."
+   ]},
+ { id:"population", src:"Ch.1 · Agriculture and Changes in Population and Language", title:"Population growth and expansion of farming areas", zh:"人口增加与农耕区的扩展",
+   points:[
+    "Tools barely improved, so to raise output people increased LABOUR: 'more sons, more blessings' 多子多福.",
+    "More people → need more grain → the only option was more cultivated land. Farming spread from the Yellow River in all directions, especially SOUTH to the Yangtze.",
+    "The south has more rain and heat: three harvests in two years, or two a year.",
+    "Population rises in peace and falls in war, following the dynasties. After the Song Dynasty (960-1279) it passed 100 million.",
+    "In the Song Dynasty the lower Yangtze (江南, 'south of the Yangtze') was developed. By 1949 China had 400 million people."
+   ]},
+ { id:"dialects", src:"Ch.1", title:"Migration and the formation of dialect regions", zh:"移民与方言区的形成",
+   points:[
+    "The main migration in Chinese history: from the Yellow River Valley in the north to the Yangtze Valley in the south. This shaped today's dialect regions.",
+    "The open, flat north absorbed changes easily, so northern speech kept changing. All northern speech today is classed as NORTHERN dialect.",
+    "In the hilly southeast there are SIX large distinct dialect groups: Wu 吴, Gan 赣, Xiang 湘, Min 闽, Hakka 客家, Yue 粤. They are like 'preserved fossils' of northern Chinese from different eras.",
+    "Mandarin 普通话: phonology based on the Beijing dialect, vocabulary from northern dialect, grammar from modern vernacular literature.",
+    "Emperor Qinshihuang 秦始皇 (259-210 B.C.), the first emperor, standardised the WRITTEN script, but not the spoken language. Today Mandarin is the spoken standard."
+   ]},
+ { id:"history-early", src:"Slides · Chinese History in a Nutshell, part 1", title:"Early history and civilisation", zh:"",
+   points:[
+    "Proof of '5000 years': myths, bones (oracle bones), bronze.",
+    "The beginning of Chinese people: Peking Man and Upper Cave Man (from Peking Man to Upper Cave Man: the 'victory of Homo sapiens'). 'Dragon bones' in TCM pharmacy led to fossil finds.",
+    "Huangdi 黄帝, the Yellow Emperor: mythological leader of the central plain tribes. Yan Di 炎帝: leader of tribes. Chi You 蚩尤: southern tribes. The Chinese call themselves 'descendants of Yan and Huang' 炎黄子孙.",
+    "Others in the Huangdi tale: Nü Ba (daughter of Huang Di), Jiu Tian Xuan Nü (goddess of war), Feng Hou (Huang Di's senior official).",
+    "Oracle bones (bones and tortoise shells): used for DIVINATION. A question was carved with a bronze pin, the bone was heated, and the cracks were read. Topics: hunting, warfare, weather, choosing lucky days for ceremonies.",
+    "Bronzes: ritual and daily vessels, e.g. the Houmuwu Ding (food container) and the Four-Ram Zun (wine vessel)."
+   ]},
+ { id:"history-confucius", src:"Slides · part 2", title:"The Sage and the Teacher: Confucius", zh:"孔子",
+   points:[
+    "Confucius (551-478 B.C. on the slides). Surname Kong 孔, given name Qiu 丘, style name Zhongni 仲尼.",
+    "Home: the State of Lu, today's Shandong Province, the city of Qufu 曲阜 (temple, mansion and cemetery of Confucius).",
+    "Background: Zhou Dynasty (Western → Eastern Zhou). The Zhou king = 'Heaven's son'; regional vassal states (e.g. Lu) were ruled by dukes and fought each other. The Duke of Zhou 周公 set up the feudal 封建 and rites-and-music 礼乐 systems.",
+    "Key idea: 仁 ren = benevolence, charity. Confucius travelled through many states debating.",
+    "Confucianism became the main ideology in the Han Dynasty (206 B.C.-220 A.D.).",
+    "Identity: a great philosopher and educator, 'an Exemplary Teacher for All the Ages', one of the world's ten cultural celebrities. Contribution: opened education to ordinary people.",
+    "3,000 students, 72 of them the wisest. 'A young man at home should be a good son; out in the world, a good citizen…'"
+   ]},
+ { id:"history-rise", src:"Slides · part 3", title:"The Rise and Fall of Ancient China", zh:"",
+   points:[
+    "Territory maps: Western Han Dynasty (206 B.C.-25 A.D.) and Tang Dynasty (618-907).",
+    "Zhang Qian 张骞, an explorer sent by the Martial Emperor of Han (汉武帝): the first man to bring back a reliable account of Central Asia to the Chinese court.",
+    "Why: the nomadic Xiongnu 匈奴 threatened the north. The emperor wanted an alliance with the Great Yuezhi 大月氏.",
+    "Sent in 138 B.C.; captured by the Xiongnu and held 10 years; never forgot his mission; reached the Yuezhi but failed to persuade them; came home after 13 years.",
+    "He reported Blood-Sweating Horses, grapes and alfalfa; his intelligence helped the Han campaigns against the Xiongnu.",
+    "Second mission (7 years later) to the Wusun 乌孙; sent assistants to regions of today's Uzbekistan and Afghanistan. Failed again, but the western states saw Han prosperity and made friendly relations. His journeys opened the way for the Silk Road.",
+    "Wu Zetian 武则天: China's ONLY woman emperor (Tang Dynasty). Influenced politics for 45 years (empress, then emperor).",
+    "Born 624 CE, daughter of an official; concubine of Emperor Taizong, then a Buddhist convent, then consort of Emperor Gaozong (Taizong's son); ran the government when Gaozong was ill; network of officials and spies; removed rivals ruthlessly.",
+    "690 CE: declared herself emperor and founded the Zhou Dynasty; ruled 15 years.",
+    "Achievements: meritocracy (talented and low-born officials), supported Buddhism, fairer agriculture and taxes, strengthened the imperial exam system."
+   ]},
+ { id:"history-modern", src:"Slides · part 4", title:"The Modern Transition", zh:"",
+   points:[
+    "1840 Opium War: China forced to open its doors.",
+    "1911 Revolution: attempt to build a new political system.",
+    "1937-1945 War of Resistance against Japan: struggle for national independence.",
+    "1949 Founding of the People's Republic of China: a new starting point."
+   ]}
+],
+keywords: [
+ ["西高东低","xī gāo dōng dī","High in the west, low in the east: China's terrain"],
+ ["黄河流域","Huánghé liúyù","Yellow River Valley: where Chinese agricultural civilisation began"],
+ ["农耕","nónggēng","Farming: the base of Chinese civilisation"],
+ ["靠天吃饭","kào tiān chī fàn","Relying on heaven for food: farmers depend on nature"],
+ ["儒家文化","Rújiā wénhuà","Confucian culture: the core of Chinese culture"],
+ ["天人合一","tiān rén hé yī","Humans at one with nature"],
+ ["多子多福","duō zǐ duō fú","More sons, more blessings"],
+ ["江南","Jiāngnán","South of the (lower) Yangtze River, developed in the Song"],
+ ["普通话","pǔtōnghuà","Standard Mandarin"],
+ ["秦始皇","Qín Shǐhuáng","First emperor; unified the written script"],
+ ["珠穆朗玛峰","Zhūmùlǎngmǎ Fēng","Mount Qomolangma (Everest)"],
+ ["塔克拉玛干沙漠","Tǎkèlāmǎgān Shāmò","Takla Makan Desert"],
+ ["仁","rén","Benevolence: Confucius's key idea"],
+ ["孝","xiào","Filial piety"],
+ ["礼","lǐ","Rites"]
+],
+timeline: [
+ { y:-700000, label:"Peking Man", era:"Prehistory", note:"Early humans near Beijing; Upper Cave Man came later." },
+ { y:-2700, label:"Huangdi & Yandi", era:"Myth", note:"Legendary leaders; the Chinese are 'descendants of Yan and Huang'." },
+ { y:-1250, label:"Oracle bones", era:"Shang", note:"Divination on bones and shells: the earliest Chinese writing. Bronze vessels." },
+ { y:-1046, label:"Zhou Dynasty", era:"Zhou", note:"Heaven's son; Duke of Zhou: feudal + rites-and-music systems." },
+ { y:-551, label:"Confucius born", era:"Zhou (Lu state)", note:"Kong Qiu, Zhongni; Qufu, Shandong. Idea: 仁." },
+ { y:-221, label:"Qinshihuang unifies China", era:"Qin", note:"First emperor (259-210 B.C.): standard written script." },
+ { y:-206, label:"Han Dynasty", era:"Han", note:"Confucianism becomes the main ideology." },
+ { y:-138, label:"Zhang Qian goes west", era:"Western Han", note:"Martial Emperor's envoy; 10 years captive; back after 13." },
+ { y:624, label:"Wu Zetian born", era:"Tang", note:"Tang Dynasty 618-907." },
+ { y:690, label:"Wu Zetian emperor", era:"Tang / her Zhou", note:"Only woman emperor; ruled 15 years." },
+ { y:960, label:"Song Dynasty", era:"Song", note:"960-1279: population passes 100 million; Jiangnan developed." },
+ { y:1840, label:"Opium War", era:"Qing", note:"China forced to open its doors." },
+ { y:1911, label:"1911 Revolution", era:"Republic", note:"New political system." },
+ { y:1937, label:"War of Resistance", era:"1937-1945", note:"National independence." },
+ { y:1949, label:"PRC founded", era:"PRC", note:"New starting point; population about 400 million." },
+ { y:1978, label:"Reform & opening-up", era:"PRC", note:"From the 1970s China opens to the world." }
+],
+quiz: [
+ ["What is the overall shape of China's terrain?","High in the west, low in the east (西高东低)",["High in the east, low in the west","Flat everywhere","High in the north, low in the south"]],
+ ["The outline of China is often compared to which animal?","A rooster",["A dragon","A horse","A tiger"]],
+ ["Where is Mount Qomolangma?","On China's southwestern border",["In the northeast","In the Gobi desert","On the eastern seaboard"]],
+ ["What does 'Qomolangma' mean in Tibetan?","Mother of Earth",["Roof of the world","White mountain","Snow god"]],
+ ["Why does China's west get so little rain?","Too far from the Pacific, and the Himalayas block clouds from the Indian Ocean",["Monsoon winds are too strong","It is below sea level","The Yellow River dries it out"]],
+ ["Where does the Yellow River get its colour and name?","Yellow soil it carries from the Loess Plateau",["Yellow rocks in its bed","Sand from the Gobi","Algae"]],
+ ["The Yellow River is China's ___ longest river.","Second",["First","Third","Fifth"]],
+ ["Which desert is called the 'Sea of Death'?","The Takla Makan Desert",["The Gobi","The Sahara","The Loess Plateau"]],
+ ["Why did China develop a unique civilisation?","It was enclosed by mountains, deserts and seas",["It traded with Europe early","It was an island","It was conquered often"]],
+ ["Chinese civilisation was built on what principle?","Self-sustaining agriculture",["Sea trade","Nomadic herding","Industry"]],
+ ["China is the only surviving civilisation of the…","Four great ancient civilisations",["Seven wonders","Silk Road states","Three kingdoms"]],
+ ["What wind system shapes China's farming?","The seasonal monsoon",["Trade winds","Westerlies","Polar winds"]],
+ ["Why do traditional houses in eastern China face south?","To catch the summer breeze and avoid the cold winter wind",["For the view of the sea","Because of the Yellow River","For religious reasons only"]],
+ ["Where did Chinese agricultural civilisation begin?","The middle to lower reaches of the Yellow River",["The Gobi","Tibet","The Pearl River delta"]],
+ ["Which river is called the 'Mother River'?","The Yellow River",["The Yangtze","The Pearl River","The Huai River"]],
+ ["Sanxingdui (Sichuan) is famous for…","Bronze/gold masks showing early Yangtze civilisation",["Oracle bones","The Terracotta Army","The Great Wall"]],
+ ["What does 靠天吃饭 mean?","Relying on heaven for food",["Eating with the emperor","Farming in the sky","Praying before meals"]],
+ ["Since when were iron tools and the harnessed plough widely used?","The 1st century B.C. at the latest",["The 15th century","1949","The Song Dynasty"]],
+ ["What is at the core of Chinese culture according to the chapter?","Confucianism",["Buddhism","Daoism","Legalism"]],
+ ["天人合一 means…","Humans at one with nature",["Heaven rules people","One emperor for all","All people are equal"]],
+ ["The character 儒 contains 雨, which suggests…","Praying for rain in a ritual dance",["Rainy weather in Lu","Water transport","Fishing"]],
+ ["孝 means…","Filial piety",["Honour","Charity","Rites"]],
+ ["Why did families want 'more sons, more blessings'?","More labour meant more harvest, since tools barely improved",["For the army","To pay taxes","For trade"]],
+ ["When did China's population pass 100 million?","After the Song Dynasty",["In the Han Dynasty","In 1949","In the Tang Dynasty"]],
+ ["What does 江南 refer to?","South of the lower Yangtze River",["North of the Yellow River","Western deserts","The capital"]],
+ ["China's main historical migration went…","From the Yellow River north to the Yangtze south",["From south to north","From east to west","From Tibet to the coast"]],
+ ["How many big dialect groups are in the southeast?","Six",["Two","Four","Ten"]],
+ ["Mandarin's pronunciation is based on…","The Beijing dialect",["The Shanghai dialect","Cantonese","Classical Chinese"]],
+ ["Who unified the written Chinese script?","Qinshihuang, the first emperor",["Confucius","Wu Zetian","Huangdi"]],
+ ["Oracle bones were used for…","Divination: asking about hunting, war, weather, lucky days",["Money","Musical instruments","Medicine only"]],
+ ["Confucius's home state was…","Lu (today's Shandong, Qufu)",["Qin","Zhou capital","Chu"]],
+ ["Confucius's key idea 仁 means…","Benevolence",["Rites","Loyalty","Wisdom"]],
+ ["Confucius's greatest contribution in education was…","Opening education to ordinary people",["Building universities","Inventing paper","Writing the first dictionary"]],
+ ["Confucianism became the main ideology in the…","Han Dynasty",["Tang Dynasty","Qin Dynasty","Song Dynasty"]],
+ ["Who sent Zhang Qian to the west?","The Martial Emperor of Han (汉武帝)",["Qinshihuang","Wu Zetian","Emperor Taizong"]],
+ ["Why was Zhang Qian sent?","To ally with the Great Yuezhi against the Xiongnu",["To buy silk","To find tea","To conquer Rome"]],
+ ["How long was Zhang Qian a captive?","10 years",["2 years","13 years","20 years"]],
+ ["Wu Zetian was…","China's only woman emperor (Tang)",["Confucius's student","A Song empress","A Han general"]],
+ ["In what year did Wu Zetian declare herself emperor?","690 CE",["624 CE","618 CE","907 CE"]],
+ ["What did Wu Zetian strengthen?","The imperial exam system",["The Great Wall","The Silk Road tolls","The navy"]],
+ ["What happened in 1840?","The Opium War",["The PRC was founded","The 1911 Revolution","The Han Dynasty fell"]],
+ ["What happened in 1949?","The People's Republic of China was founded",["The Opium War","The War of Resistance began","Reform and opening-up"]]
+]
+};

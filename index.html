@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hanzi Lab</title>
+<meta name="description" content="Visual 3D study site for 汉语教程 Book 1A lessons 1-8, Chinese listening 1-5 and China Overview, with a 2-day exam plan.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23b8322a'/%3E%3Ctext x='32' y='46' font-size='40' text-anchor='middle' fill='%23fff' font-family='serif'%3E%E5%AD%97%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="#today"><span class="seal">字</span><span>Hanzi Lab</span></a>
+  <nav class="tabs" id="tabs">
+    <a href="#today">Today</a>
+    <a href="#palace">Palace 3D</a>
+    <a href="#chars">Characters</a>
+    <a href="#drill">Drill</a>
+    <a href="#reading">Reading</a>
+    <a href="#listening">Listening</a>
+    <a href="#overview">Overview</a>
+    <a href="#mock">Mock exams</a>
+  </nav>
+  <button id="theme-btn" class="ghost small" type="button">Theme</button>
+</header>
+
+<main>
+  <!-- TODAY -->
+  <section data-view="today">
+    <div class="hero">
+      <canvas id="hero-3d" aria-hidden="true"></canvas>
+      <div class="hero-text">
+        <p class="eyebrow">汉语教程 Book 1A · Lessons 1-8 · 182 characters</p>
+        <h1>Learn every character by <em>seeing</em> it.</h1>
+        <p class="lead">Each character gets a picture story, its strokes drawn live, its parts colour-coded and a place in a 3D memory palace. Then the site quizzes you until it sticks, spacing reviews with FSRS.</p>
+        <div class="row"><a class="btn" href="#drill">Start today's drill</a><a class="btn ghost" href="#palace">Walk the palace</a></div>
+      </div>
+    </div>
+    <div class="countdowns" id="countdowns"></div>
+    <div class="grid2">
+      <div class="panel">
+        <h2>Right now</h2>
+        <div id="now-block"></div>
+      </div>
+      <div class="panel">
+        <h2>Your progress</h2>
+        <div id="progress"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>The plan, hour by hour</h2>
+      <p class="muted">Work backwards from each exam. Each block is 25 minutes of work and 5 of rest. Tick blocks off as you go; your ticks are saved on this device.</p>
+      <div id="plan"></div>
+    </div>
+    <div class="panel">
+      <h2>Why this plan works</h2>
+      <div class="methods" id="methods"></div>
+    </div>
+  </section>
+
+  <!-- PALACE -->
+  <section data-view="palace">
+    <div class="view-head">
+      <h1>Memory palace</h1>
+      <p class="muted">Each lesson is a room. Every character stands on its own pedestal, always in the same place. Drag to look around, tap a tile to open the character. Later, close your eyes, walk the room and recall each tile.</p>
+      <div class="chips" id="palace-rooms"></div>
+    </div>
+    <div class="stage"><canvas id="palace-3d"></canvas><div class="stage-hint" id="palace-hint">Drag to rotate · scroll/pinch to zoom · tap a tile</div></div>
+    <div class="panel"><h3 id="palace-list-title">In this room</h3><div class="tile-row" id="palace-list"></div></div>
+  </section>
+
+  <!-- CHARACTERS -->
+  <section data-view="chars">
+    <div class="view-head">
+      <h1>All characters</h1>
+      <p class="muted">Tap any character to see its strokes, parts, picture story and tone.</p>
+      <div class="chips" id="chars-filter"></div>
+    </div>
+    <div id="chars-grid" class="char-grid"></div>
+  </section>
+
+  <!-- DRILL -->
+  <section data-view="drill">
+    <div class="view-head">
+      <h1>Drill</h1>
+      <p class="muted">Recall before you look. Wrong answers come back sooner; right ones are spaced further apart (FSRS).</p>
+      <div class="chips" id="drill-lessons"></div>
+      <div class="chips" id="drill-modes"></div>
+    </div>
+    <div class="drill-card" id="drill-card"></div>
+    <p class="muted center" id="drill-stats"></p>
+  </section>
+
+  <!-- READING -->
+  <section data-view="reading">
+    <div class="view-head">
+      <h1>Reading L1-8</h1>
+      <p class="muted">Read the hanzi first. Tap a line to show pinyin, tap again for English. Then answer the questions.</p>
+      <div class="chips" id="reading-lessons"></div>
+    </div>
+    <div class="grid2">
+      <div class="panel" id="reading-text"></div>
+      <div class="panel" id="reading-side"></div>
+    </div>
+  </section>
+
+  <!-- LISTENING -->
+  <section data-view="listening">
+    <div class="view-head">
+      <h1>Listening L1-5</h1>
+      <p class="muted">Same exercise types as 汉语听力教程: mark the tone, same or different, pick the initial or final, catch the sentence. Audio uses your device's Chinese voice.</p>
+      <div id="tts-status" class="note"></div>
+      <div class="chips" id="listen-lessons"></div>
+      <div class="chips" id="listen-modes"></div>
+    </div>
+    <div class="grid2">
+      <div class="panel"><h3>Tones you'll hear</h3><canvas id="tone-3d" class="tone-canvas"></canvas><div class="row" id="tone-buttons"></div></div>
+      <div class="panel drill-card" id="listen-card"></div>
+    </div>
+  </section>
+
+  <!-- OVERVIEW -->
+  <section data-view="overview">
+    <div class="view-head">
+      <h1>China Overview</h1>
+      <p class="muted">Chapter 1 (geography and culture) and the history slides. Scroll through 5,000 years in 3D, then quiz yourself.</p>
+    </div>
+    <div class="stage"><canvas id="timeline-3d"></canvas><div class="stage-hint">Scroll or swipe across the timeline · tap an event</div></div>
+    <div class="panel" id="timeline-detail"></div>
+    <div class="grid2">
+      <div class="panel"><h2>Notes</h2><div id="ov-sections"></div></div>
+      <div class="panel"><h2>Key words</h2><div id="ov-keywords"></div></div>
+    </div>
+  </section>
+
+  <!-- MOCK -->
+  <section data-view="mock">
+    <div class="view-head">
+      <h1>Mock exams</h1>
+      <p class="muted">Timed and scored, with the reason for every answer. Take each one the evening before that exam.</p>
+    </div>
+    <div class="mock-pick" id="mock-pick"></div>
+    <div id="mock-run"></div>
+  </section>
+</main>
+
+<!-- character card -->
+<dialog id="card" class="card-dialog">
+  <button class="close ghost" id="card-close" aria-label="Close">✕</button>
+  <div id="card-body"></div>
+</dialog>
+
+<footer class="foot">
+  <p>Vocabulary from 汉语教程 (3rd ed.) Book 1A, lessons 1-8. Picture stories, practice dialogues and quizzes written for this site. Stroke data: Hanzi Writer / Make Me a Hanzi (Arphic PL). 3D: three.js. Spaced review: ts-fsrs.</p>
+</footer>
+
+<script src="data/lessons.js"></script>
+<script src="data/hanzi.js"></script>
+<script src="data/overview.js"></script>
+<script src="private/texts.js" onerror="window.BOOK_TEXTS=null"></script>
+<script src="vendor/fsrs/ts-fsrs.umd.js"></script>
+<script src="vendor/hanzi-writer/hanzi-writer.min.js"></script>
+<script type="importmap">{ "imports": { "three": "./vendor/three/three.module.min.js" } }</script>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
