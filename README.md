@@ -7,6 +7,7 @@ A visual study site for 汉语教程 (3rd ed.) Book 1A lessons 1-8 (182 characte
 - **Character card**: stroke-order animation, write-it quiz, parts, picture story and a 3D tone ribbon.
 - **Drill**: meaning, pinyin, writing, words, sentence order and listening drills, scheduled with FSRS.
 - **Reading / Listening / Overview**: dialogues, tone and initial/final drills, a 3D history timeline and a quiz.
+- **Comprehensive**: practise the 10 mid-term question types one at a time; listening types use clips of the textbook's own 练习 recordings (data/bookex.js + data/clips.js, aligned with whisper + silence detection).
 - **Mock exams**: one timed paper for each of the 4 exams, newly generated each time.
 
 Static HTML, CSS and JS with no build step. three.js, Hanzi Writer (+ stroke data for the 182 characters only) and ts-fsrs are bundled in `vendor/`.
