@@ -355,9 +355,8 @@ export function timeline(canvas, onPick) {
     if (!visible(canvas) || !fit(renderer, camera, canvas)) return;
     if (goal != null) { u += (goal - u) * .08; if (Math.abs(goal - u) < .001) goal = null; }
     u = THREE.MathUtils.clamp(u + vu, 0, maxU); vu *= .9;
-    const camU = Math.max(0, u - .04);
-    const p = path.getPointAt(Math.min(1, camU)), look = path.getPointAt(Math.min(1, u + .08));
-    camera.position.set(p.x, 2.6, p.z + 3); camera.lookAt(look.x, 2.2, look.z);
+    const p = path.getPointAt(u), look = path.getPointAt(Math.min(1, u + .05));
+    camera.position.set(p.x * .4, 3.4, p.z + 7.5); camera.lookAt(look.x * .6, 2.6, look.z);
     const t = performance.now() / 1000;
     banners.forEach(b => { b.position.y = b.userData.y + (reduced() ? 0 : Math.sin(t + b.userData.i) * .06); });
     const idx = Math.round(u * (ev.length - 1));
