@@ -76,7 +76,16 @@ export function split(py) {
 }
 export const listenChars = ls => CHARS.filter(r => ls.includes(r.lesson) && !AMBIG.has(r.c) && toneOf(r.py) && HANZI[r.c]);
 let getListenLs, getListenMode, toneCtl;
-const LMODES = [["tone", "Mark the tone"], ["same", "Same or different"], ["initial", "Initial"], ["final", "Final"], ["sentence", "Sentence"]];
+const LMODES = [["tone", "Mark the tone"], ["same", "Same or different"], ["initial", "Initial"], ["final", "Final"], ["wini", "✍ Write the initial"], ["wfin", "✍ Write the final"], ["sentence", "Sentence"]];
+// typed answer → { letters, tone } (tone marks or digits; v = ü)
+const MARKS = { "̄": 1, "́": 2, "̌": 3, "̀": 4 };
+function typed(v) {
+  let letters = "", tone = null;
+  for (const ch of v.trim().toLowerCase().replace(/u:/g, "ü").replace(/v/g, "ü").normalize("NFD")) {
+    if (MARKS[ch]) tone = MARKS[ch]; else if (/[0-5]/.test(ch)) tone = +ch % 5; else if (/[a-zü̈]/.test(ch)) letters += ch;
+  }
+  return { letters: letters.normalize("NFC"), tone };
+}
 function listenItem() {
   const ls = getListenLs().map(Number), mode = getListenMode()[0];
   const card = $("listen-card");
@@ -117,6 +126,34 @@ function listenItem() {
       const others = shuffle([...new Set(pool.map(x => split(x.py).ini).filter(x => x && x !== ini))]).slice(0, 3);
       const opts = shuffle([ini || "(none)", ...others]);
       body = [playBtn, h("p", { class: "muted" }, "Which initial (声母)?"), btns(opts.map(o => [o, o]), ini || "(none)", ok => finish(`li:${r.c}`, ok, reveal))];
+    } else if (mode === "wini" || mode === "wfin") {
+      const isIni = mode === "wini";
+      const withIni = pool.filter(x => split(x.py).ini);
+      const r2 = isIni && !ini ? withIni[Math.random() * withIni.length | 0] || r : r;
+      const R = split(r2.py), T = toneOf(r2.py), P = plain(r2.py).toLowerCase();
+      const written = P.slice(R.ini.length);
+      const accept = isIni ? [R.ini] : [...new Set([written, R.fin, R.fin.replace(/ü/g, "u")])];
+      const want = isIni ? R.ini : (written === R.fin ? R.fin : `${written} (= ${R.fin})`);
+      const rv = `${r2.c} <b>${colorPinyin(r2.py)}</b> · ${esc(charMeaning(r2))}`;
+      const inp = h("input", { type: "text", class: "write-in", autocomplete: "off", autocapitalize: "off", spellcheck: "false", placeholder: isIni ? "e.g. zh" : "e.g. iang or iang2 (v = ü)" });
+      const check = () => {
+        if (done || !inp.value.trim()) return;
+        const a = typed(inp.value);
+        const okLetters = accept.includes(a.letters);
+        const okTone = isIni || a.tone == null || a.tone === T;
+        const ok = okLetters && okTone;
+        inp.disabled = true; inp.classList.add(ok ? "right" : "wrong");
+        finish(`${isIni ? "lwi" : "lwf"}:${r2.c}`, ok, `${isIni ? "Initial" : "Final"}: <b>${esc(want)}</b>${!isIni ? ` · tone ${T}` : ""}${okLetters && !okTone ? " (letters right, tone wrong)" : ""}<br>${rv}`);
+      };
+      inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); check(); } });
+      const pb = h("button", { class: "btn big-btn", type: "button", onclick: () => { play(r2.c); toneCtl?.play(T); } }, "🔊 Play");
+      body = [pb, h("p", { class: "muted" }, isIni ? "Write the initial (声母) you hear." : "Write the final (韵母) you hear. Adding the tone is optional; if you add it, it has to be right."),
+        h("div", { class: "row", style: "justify-content:center;margin-top:10px" }, inp,
+          isIni ? null : h("button", { class: "small ghost", type: "button", onclick: () => { inp.value += "ü"; inp.focus(); } }, "ü"),
+          h("button", { class: "small", type: "button", onclick: check }, "Check"))];
+      setTimeout(() => { play(r2.c); inp.focus({ preventScroll: true }); }, 250);
+      card.replaceChildren(h("p", { class: "eyebrow" }, LMODES.find(m => m[0] === mode)[1]), ...body, fb, next);
+      return;
     } else {
       const others = shuffle([...new Set(pool.map(x => split(x.py).fin).filter(x => x && x !== fin))]).slice(0, 3);
       const opts = shuffle([fin, ...others]);

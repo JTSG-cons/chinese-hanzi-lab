@@ -230,3 +230,5 @@ section[data-view].on{display:block;animation:fade .35s ease}
 .track.on{border-color:var(--seal);background:color-mix(in srgb,var(--seal) 12%,var(--panel))}
 .track.missing{opacity:.5;cursor:not-allowed}
 #reading-text .book-audio{box-shadow:none;margin:0 0 14px}
+.write-in{font:inherit;font-size:1.6rem;text-align:center;width:min(240px,70vw);padding:8px 12px;border-radius:12px;border:2px solid var(--line);background:var(--bg);color:var(--ink)}
+.write-in.right{border-color:var(--good)} .write-in.wrong{border-color:var(--bad)}
