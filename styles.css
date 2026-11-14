@@ -221,3 +221,12 @@ section[data-view].on{display:block;animation:fade .35s ease}
   .mq input[type=text]{border:none;border-bottom:1px solid #000;border-radius:0;width:60%}
 }
 .gap{display:inline-block;min-width:1.7em;height:1em;border-bottom:2px solid var(--seal);margin:0 2px;vertical-align:-2px}
+
+/* textbook recordings */
+.book-audio{margin-top:0}
+.tracks{display:grid;gap:6px}
+.track{justify-content:flex-start;text-align:left;background:var(--bg2);color:var(--ink);border-color:var(--line);gap:10px}
+.track b{font-variant-numeric:tabular-nums;color:var(--seal);min-width:2.6em}
+.track.on{border-color:var(--seal);background:color-mix(in srgb,var(--seal) 12%,var(--panel))}
+.track.missing{opacity:.5;cursor:not-allowed}
+#reading-text .book-audio{box-shadow:none;margin:0 0 14px}

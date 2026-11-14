@@ -3,6 +3,7 @@ import { $, h, LESSONS, CHARS, BY_CHAR, HANZI, OVERVIEW, chips, speak, speech, c
 import { openCard } from "./card.js";
 import { palace, toneScene, timeline } from "./scenes.js";
 import { charMeaning } from "./drills.js";
+import { audioPanel } from "./audio.js";
 
 // ---------- READING ----------
 let readingLesson = 1;
@@ -31,6 +32,7 @@ function renderReading() {
   const n = readingLesson, L = LESSONS[n - 1];
   const book = window.BOOK_TEXTS && window.BOOK_TEXTS[n];
   $("reading-text").replaceChildren(
+    n <= 5 ? audioPanel(n) : null,
     h("h2", {}, h("span", { class: "zh" }, `第${"一二三四五六七八"[n - 1]}课 ${L.zh}`), " ", h("small", { class: "muted" }, L.en)),
     book ? h("div", {}, h("p", {}, h("span", { class: "src-tag" }, "课文 · textbook text (your local copy)")), dialogue(book)) : null,
     h("p", { style: "margin-top:14px" }, h("span", { class: "src-tag" }, "Practice dialogue: same words, new sentences")),
@@ -135,6 +137,9 @@ function initListening() {
   getListenMode = chips($("listen-modes"), LMODES, { initial: ["tone"], key: "hzl-listen-mode", onChange: listenItem });
   $("tone-buttons").replaceChildren(...[1, 2, 3, 4].map(t => h("button", { class: "small ghost", type: "button", onclick: () => { toneCtl?.play(t); speak(["妈", "麻", "马", "骂"][t - 1], .6); } }, h("span", { class: "t" + t }, `${withTone("ma", t)} ${["妈", "麻", "马", "骂"][t - 1]}`))));
   addEventListener("voiceready", ttsStatus); ttsStatus();
+  const drawAudio = () => $("book-audio").replaceChildren(audioPanel(+getAudioL()[0]));
+  const getAudioL = chips($("book-audio-ls"), [1, 2, 3, 4, 5].map(n => [String(n), `🎧 L${n} recordings`]), { initial: ["1"], key: "hzl-audio-l", onChange: drawAudio });
+  drawAudio();
 }
 export function enterListening() {
   if (!toneCtl) toneCtl = toneScene($("tone-3d"), { tones: [1, 2, 3, 4] });

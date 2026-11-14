@@ -18,7 +18,7 @@ export const PLAN = [
     ["14:30", 25, "Drill L1-2", "Meaning and Write modes. Say each answer out loud before you tap.", "#drill"],
     ["15:00", 25, "Lesson 3 characters", "Palace room 3 (post office): 学 去 邮局 寄信 银行 取钱…", "#palace/3"],
     ["15:30", 25, "Drill L1-3 mixed", "Mixed lessons on purpose: harder now, better on Monday.", "#drill"],
-    ["16:00", 25, "Tones and pinyin L1-3", "Tone ribbons, then the tone and initial/final drills. Know 不 bù → bú before 4th tone.", "#listening"],
+    ["16:00", 25, "Tones and pinyin L1-3", "Play the textbook 语音 + 练习 recordings for L1-3 (Listening page), repeating aloud. Then the tone and initial/final drills. Know 不 bù → bú before 4th tone.", "#listening"],
     ["16:30", 25, "Overview pass 1: geography", "Notes: terrain, enclosed environment, monsoon, man and nature. Say each KEY SENTENCE out loud.", "#overview"],
     ["17:00", 60, "Break · dinner · walk", "Real rest. No phone scrolling: your brain is filing what you learned.", ""],
     ["18:00", 25, "Lesson 4 characters", "Palace room 4 (Tian'anmen): days of the week, 几 哪儿 我 回 学校 再见 对不起 没关系.", "#palace/4"],
@@ -38,7 +38,7 @@ export const PLAN = [
     ["10:45", 25, "Overview: history", "Zhang Qian, Wu Zetian, modern timeline. Learn the dates: 138 B.C., 690, 1840, 1911, 1937-45, 1949.", "#overview"],
     ["11:15", 30, "Overview quiz round", "All the flash questions. Re-read the notes for any you miss.", "#overview"],
     ["12:00", 60, "Lunch", "", ""],
-    ["13:00", 25, "Listening L1-5", "Initials, finals, tones: it also covers the pinyin part of the Comprehensive exam.", "#listening"],
+    ["13:00", 25, "Listening L1-5", "Textbook 练习 recordings L4-5 at 0.9×, then the initial/final drills: this is the listening half of the Comprehensive exam.", "#listening"],
     ["13:30", 60, "MOCK: Comprehensive L1-5", "The real mid-term's 10 question types. Headphones on, write the typed answers on paper too.", "#mock/comp"],
     ["14:35", 25, "Fix the mock mistakes", "Start with the weakest section listed under your score. Open each wrong character card and drill it again.", "#drill"],
     ["15:00", 30, "MOCK: China Overview", "Timed.", "#mock/ov"],
@@ -76,7 +76,7 @@ export const PLAN = [
   { date: "11-18", label: "Wed 18 Nov", sub: "EXAM: Reading · Listening prep", blocks: [
     ["07:30", 30, "Warm-up", "Read every lesson dialogue once, hanzi only.", "#reading/1"],
     ["exam:read", 0, "EXAM: Chinese Reading L1-8", "", ""],
-    ["18:00", 25, "Listening L1-3", "Tone marking + same/different.", "#listening"],
+    ["18:00", 25, "Listening L1-3", "Replay the L1-3 练习 recordings, then tone marking + same/different.", "#listening"],
     ["18:30", 25, "Listening L4-5", "z c s / zh ch sh r, finals with u.", "#listening"],
     ["19:00", 35, "MOCK: Listening L1-5", "Use headphones.", "#mock/listen"],
     ["19:45", 25, "Fix tone errors · sleep", "", "#listening"]
