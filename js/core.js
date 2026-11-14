@@ -15,7 +15,7 @@ export function toneOf(syl) {
 }
 // Strip tone marks: "hǎo" → "hao"
 export function plain(s) {
-  return s.normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/ü/g, "ü").normalize("NFC");
+  return s.normalize("NFD").replace(/[̀́̄̌]/g, "").normalize("NFC"); // keep the dots on ü
 }
 const BASE = { a: "āáǎà", e: "ēéěè", i: "īíǐì", o: "ōóǒò", u: "ūúǔù", "ü": "ǖǘǚǜ" };
 // Put tone t on a plain syllable following the standard placement rule.

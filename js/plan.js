@@ -39,14 +39,15 @@ export const PLAN = [
     ["11:15", 30, "Overview quiz round", "All the flash questions. Re-read the notes for any you miss.", "#overview"],
     ["12:00", 60, "Lunch", "", ""],
     ["13:00", 25, "Listening L1-5", "Initials, finals, tones: it also covers the pinyin part of the Comprehensive exam.", "#listening"],
-    ["13:30", 40, "MOCK: Comprehensive L1-5", "Timed. No peeking.", "#mock/comp"],
-    ["14:15", 30, "Fix the mock mistakes", "Open each wrong character card and drill it again.", "#drill"],
+    ["13:30", 60, "MOCK: Comprehensive L1-5", "The real mid-term's 10 question types. Headphones on, write the typed answers on paper too.", "#mock/comp"],
+    ["14:35", 25, "Fix the mock mistakes", "Start with the weakest section listed under your score. Open each wrong character card and drill it again.", "#drill"],
     ["15:00", 30, "MOCK: China Overview", "Timed.", "#mock/ov"],
     ["15:45", 30, "Fix Overview gaps", "Re-read only the notes behind wrong answers. Say the key sentences.", "#overview"],
     ["16:30", 30, "Break", "", ""],
     ["17:00", 40, "Write L1-5 from memory", "Paper test: read the English and pinyin from the Characters page and write every character. Circle the misses.", "#chars"],
     ["17:45", 25, "Due reviews", "", "#drill"],
-    ["20:00", 15, "Light pass", "Palace walk L1-5 + one timeline scroll. Then sleep early (before 22:30).", "#palace/1"]
+    ["19:00", 60, "MOCK 2: Comprehensive (fresh paper)", "A new paper. Aim for 85%+. Only check the red answers afterwards.", "#mock/comp"],
+    ["20:15", 15, "Light pass", "Palace walk L1-5 + one timeline scroll. Then sleep early (before 22:30).", "#palace/1"]
   ]},
   { date: "11-16", label: "Mon 16 Nov", sub: "EXAM: Comprehensive + Overview · start L6", blocks: [
     ["07:30", 30, "Warm-up", "Due reviews + Overview key words. Nothing new.", "#drill"],
